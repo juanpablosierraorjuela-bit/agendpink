@@ -117,9 +117,8 @@
         // ------------------------------------------------------------------
         // CONFIGURACIÓN DE CONEXIÓN
         // ------------------------------------------------------------------
-        // PASO FINAL: Cuando despliegues en Render, reemplaza esta URL
-        // por la que te dé Render (ej: https://mi-backend.onrender.com)
-        const BACKEND_URL = 'http://127.0.0.1:5000'; 
+        // *** ESTA URL YA ESTÁ CONFIGURADA CON TU BACKEND DE RENDER ***
+        const BACKEND_URL = 'https://agenda-backend-735v.onrender.com'; 
         // ------------------------------------------------------------------
 
         // Inicializar iconos
@@ -157,7 +156,7 @@
             };
 
             try {
-                // Usamos la variable de configuración de arriba
+                // Usamos la URL de Render para la conexión
                 const respuesta = await fetch(`${BACKEND_URL}/send-telegram`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -173,7 +172,8 @@
                 }
             } catch (error) {
                 console.error(error);
-                mostrarMensaje("No pudimos conectar con el servidor. ¿Está el backend encendido?", 'error');
+                // Si la conexión falla, asumimos que Render está "durmiendo" o hay un error.
+                mostrarMensaje("Error de conexión. Puede que el servidor esté despertando (tarda 50s) o que haya un problema en Render.", 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
