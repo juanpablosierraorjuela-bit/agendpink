@@ -2,21 +2,3 @@ Flask
 flask-cors
 requests
 gunicorn
-
-#### **2. Subir a GitHub**
-1.  Ve a [GitHub.com](https://github.com/) y crea una cuenta si no tienes.
-2.  Crea un **Nuevo Repositorio** (ponle un nombre como "agenda-pink-bliss").
-3.  Sube tus 3 archivos (`telegram_backend.py`, `agenda_salon_belleza.html`, `requirements.txt`) a ese repositorio (puedes arrastrarlos si usas la web, o usar comandos `git add .`, `git commit`, `git push` si sabes usarlos).
-
-#### **3. Conectar con Render (Para el Python)**
-1.  Ve a [Render.com](https://render.com/) y crea cuenta (puedes usar la de GitHub).
-2.  Dale a **"New +"** y elige **"Web Service"**.
-3.  Conecta tu repositorio de GitHub.
-4.  Render detectará que es Python. Asegúrate de poner esto en **"Start Command"**:
-    `gunicorn telegram_backend:app`
-5.  Dale a **"Create Web Service"**.
-
-¡Render te dará una URL (ej: `https://agenda-pink.onrender.com`)!
-
-#### **4. Paso Final**
-Copia esa URL que te dio Render, ve a tu archivo HTML (línea 169 aprox) y cámbiala donde dice `BACKEND_URL`. Luego sube ese cambio a GitHub y usa **GitHub Pages** para que tu HTML también esté en internet.
