@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda Pink Bliss - Administración Firestore</title>
+    <title>Agenda Pink Bliss - Administración Profesional</title>
     <!-- Tailwind CSS y Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #fdf2f8; }
+        /* Estilos de input responsivos y con focus */
         .app-input {
             @apply w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all font-medium text-gray-700;
         }
         .app-input-no-icon {
             @apply w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all font-medium text-gray-700;
         }
-        .tab-active { @apply text-pink-600 border-pink-600 font-extrabold; }
-        .tab-inactive { @apply text-gray-500 border-transparent font-bold hover:text-pink-600 hover:border-pink-300; }
+        .tab-active {
+            @apply text-pink-600 border-pink-600 font-extrabold;
+        }
+        .tab-inactive {
+            @apply text-gray-500 border-transparent font-bold hover:text-pink-600 hover:border-pink-300;
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -30,37 +35,33 @@
             <button id="tab-agenda" class="tab-button py-4 px-6 text-sm border-b-2 transition duration-150 tab-active">
                 <i data-lucide="calendar-heart" class="inline-block w-4 h-4 mr-1"></i> Agendar Cita
             </button>
-            <button id="tab-admin-employees" class="tab-button py-4 px-6 text-sm border-b-2 transition duration-150 tab-inactive hidden">
-                <i data-lucide="users-round" class="inline-block w-4 h-4 mr-1"></i> Admin. Empleados
+            <button id="tab-admin-employees" class="tab-button py-4 px-6 text-sm border-b-2 transition duration-150 tab-inactive">
+                <i data-lucide="users-round" class="inline-block w-4 h-4 mr-1"></i> Admin. Empleados y Horarios
             </button>
-            <button id="tab-admin-services" class="tab-button py-4 px-6 text-sm border-b-2 transition duration-150 tab-inactive hidden">
-                <i data-lucide="gem" class="inline-block w-4 h-4 mr-1"></i> Admin. Servicios
-            </button>
-            <button id="admin-login-btn" class="py-4 px-6 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-pink-600 transition">
-                <i data-lucide="lock" class="inline-block w-4 h-4 mr-1"></i> Admin
+            <button id="tab-admin-services" class="tab-button py-4 px-6 text-sm border-b-2 transition duration-150 tab-inactive">
+                <i data-lucide="gem" class="inline-block w-4 h-4 mr-1"></i> Admin. Servicios y Precios
             </button>
         </div>
 
         <!-- Contenido -->
         <div class="p-6 md:p-10">
+
             <header class="text-center mb-6">
                 <h1 class="text-3xl font-extrabold text-gray-800">Pink Bliss Agenda</h1>
             </header>
 
             <!-- Mensaje de Estado Global -->
-            <div id="mensaje-estado" class="p-3 mb-5 rounded-xl text-center font-bold text-sm bg-gray-100 text-gray-600">
-                Cargando datos. Por favor, espere...
-            </div>
+            <div id="mensaje-estado" class="hidden p-3 mb-5 rounded-xl text-center font-bold text-sm"></div>
 
-            <!-- SECCIÓN 1: AGENDA DE CITAS (VISIBILIDAD PÚBLICA) -->
+            <!-- SECCIÓN 1: AGENDA DE CITAS -->
             <div id="content-agenda">
-                <!-- Formulario -->
                 <form id="form-cita" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         
                         <!-- Datos Cliente -->
                         <div class="space-y-4">
                             <h3 class="text-xl font-bold text-gray-700 border-b border-pink-100 pb-2">Tus Datos</h3>
+                            <!-- Campos de Cliente... (sin cambios) -->
                             <div>
                                 <label class="text-xs font-bold text-gray-500 uppercase ml-1">Tu Nombre</label>
                                 <div class="relative mt-1">
@@ -75,29 +76,29 @@
                                     <input type="tel" id="contacto" required placeholder="Ej: 300 123 4567" class="app-input">
                                 </div>
                             </div>
-                            <p id="service-summary" class="text-sm font-semibold pt-4 text-pink-600 bg-pink-50 p-3 rounded-lg hidden"></p>
+                            <p id="service-summary" class="text-sm font-semibold pt-4 text-pink-600 bg-pink-50 p-3 rounded-lg"></p>
                         </div>
 
                         <!-- Detalles de la Cita -->
                         <div class="space-y-4">
                             <h3 class="text-xl font-bold text-gray-700 border-b border-pink-100 pb-2">Detalles</h3>
                             
-                            <!-- Servicio (Dinámico de Firestore) -->
+                            <!-- Servicio (Ahora dinámico) -->
                             <div>
                                 <label class="text-xs font-bold text-gray-500 uppercase ml-1">Servicio</label>
                                 <div class="relative mt-1">
-                                    <select id="servicio" class="app-input-no-icon appearance-none cursor-pointer">
+                                    <select id="servicio" class="app-input appearance-none cursor-pointer">
                                         <option value="">Cargando Servicios...</option>
                                     </select>
                                     <i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
                                 </div>
                             </div>
 
-                            <!-- Empleado (Dinámico de Firestore) -->
+                            <!-- Empleado (Ahora dinámico) -->
                             <div>
                                 <label class="text-xs font-bold text-gray-500 uppercase ml-1">Estilista Favorito</label>
                                 <div class="relative mt-1">
-                                    <select id="empleado" required class="app-input-no-icon appearance-none cursor-pointer">
+                                    <select id="empleado" required class="app-input appearance-none cursor-pointer">
                                         <option value="">Cargando Estilistas...</option>
                                     </select>
                                     <i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
@@ -105,7 +106,7 @@
                             </div>
                         </div>
 
-                        <!-- Fecha y Hora -->
+                        <!-- Fecha y Hora (Abajo) -->
                         <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-bold text-gray-500 uppercase ml-1">Fecha</label>
@@ -116,6 +117,7 @@
                                 <input type="time" id="hora" required class="app-input-no-icon">
                             </div>
                         </div>
+
                     </div>
                     
                     <!-- Botón de Acción -->
@@ -127,10 +129,10 @@
             </div> <!-- Fin content-agenda -->
 
 
-            <!-- SECCIÓN 2: ADMINISTRACIÓN DE EMPLEADOS (OCULTO) -->
+            <!-- SECCIÓN 2: ADMINISTRACIÓN DE EMPLEADOS -->
             <div id="content-admin-employees" class="hidden">
-                <h3 class="text-xl font-bold text-gray-700 border-b border-pink-100 pb-2 mb-4">Gestión de Estilistas (Base de Datos)</h3>
-                <p class="text-sm text-gray-600 mb-4">Esta información es persistente (visible para todos). La columna "Horario" simula tu modelo `HorarioSemanal`.</p>
+                <h3 class="text-xl font-bold text-gray-700 border-b border-pink-100 pb-2 mb-4">Gestión de Estilistas y Servicios (ManyToMany)</h3>
+                <p class="text-sm text-gray-600 mb-4">Define quién es tu personal y qué servicios realiza cada uno (como en tu `models.py`).</p>
 
                 <div id="employee-list" class="space-y-3 mb-6">
                     <!-- Lista de empleados se inserta aquí -->
@@ -139,11 +141,11 @@
                 <button id="add-employee-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg flex items-center transition">
                     <i data-lucide="user-plus" class="w-5 h-5 mr-2"></i> Añadir Nuevo Estilista
                 </button>
-            </div> 
+            </div> <!-- Fin content-admin-employees -->
 
-            <!-- SECCIÓN 3: ADMINISTRACIÓN DE SERVICIOS (OCULTO) -->
+            <!-- SECCIÓN 3: ADMINISTRACIÓN DE SERVICIOS -->
             <div id="content-admin-services" class="hidden">
-                <h3 class="text-xl font-bold text-gray-700 border-b border-pink-100 pb-2 mb-4">Gestión de Servicios y Precios</h3>
+                <h3 class="text-xl font-bold text-gray-700 border-b border-pink-100 pb-2 mb-4">Gestión de Servicios (`Servicio` Model)</h3>
                 <p class="text-sm text-gray-600 mb-4">Configura la duración y el precio de cada servicio ofrecido.</p>
 
                 <div id="service-list" class="space-y-3 mb-6">
@@ -153,24 +155,10 @@
                 <button id="add-service-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg flex items-center transition">
                     <i data-lucide="scissors" class="w-5 h-5 mr-2"></i> Añadir Nuevo Servicio
                 </button>
-            </div>
+            </div> <!-- Fin content-admin-services -->
 
         </div> <!-- Fin p-6 md:p-10 -->
     </div> <!-- Fin contenedor principal -->
-
-
-    <!-- Modal (Ventana Emergente) para Login Admin -->
-    <div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden p-4 z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 class="text-xl font-bold text-pink-600 mb-4">Acceso de Administrador</h3>
-            <p class="text-sm text-gray-600 mb-4">La contraseña por defecto es: **1234**</p>
-            <input type="password" id="admin-password" required placeholder="Contraseña Admin" class="app-input-no-icon mb-4">
-            <div class="flex justify-end space-x-3">
-                <button type="button" id="close-admin-modal-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg transition hover:bg-gray-300">Cancelar</button>
-                <button type="button" id="login-admin-btn" class="bg-pink-600 text-white font-bold py-2 px-4 rounded-lg transition hover:bg-pink-700">Entrar</button>
-            </div>
-        </div>
-    </div>
 
 
     <!-- Modal (Ventana Emergente) para Crear/Editar Empleados -->
@@ -178,20 +166,16 @@
         <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl">
             <h3 class="text-xl font-bold text-pink-600 mb-4" id="employee-modal-title">Añadir Nuevo Estilista</h3>
             <form id="employee-form" class="space-y-4">
-                <input type="hidden" id="employee-doc-id">
+                <input type="hidden" id="employee-id">
                 <div>
                     <label class="block text-sm font-bold text-gray-600 mb-1">Nombre Completo</label>
                     <input type="text" id="modal-employee-name" required class="app-input-no-icon">
                 </div>
-                <!-- Simulación Horario Semanal -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-600 mb-1">Horario Semanal (Ej: L-V 9am-5pm)</label>
-                    <input type="text" id="modal-employee-schedule" required class="app-input-no-icon" placeholder="Horario Laboral">
-                </div>
-                <!-- Selección de Servicios que Realiza (ManyToMany) -->
+                <!-- Nuevo: Selección de Servicios que Realiza (ManyToMany) -->
                 <div>
                     <label class="block text-sm font-bold text-gray-600 mb-1">Servicios que Realiza</label>
                     <div id="employee-services-checkboxes" class="grid grid-cols-2 gap-2 p-3 bg-gray-50 rounded-lg max-h-48 overflow-y-auto">
+                        <!-- Checkboxes de servicios se insertan aquí -->
                         <p class="text-gray-500 text-sm italic">Cargando servicios...</p>
                     </div>
                 </div>
@@ -208,7 +192,7 @@
         <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
             <h3 class="text-xl font-bold text-purple-600 mb-4" id="service-modal-title">Añadir Nuevo Servicio</h3>
             <form id="service-form" class="space-y-4">
-                <input type="hidden" id="service-doc-id">
+                <input type="hidden" id="service-id">
                 <div>
                     <label class="block text-sm font-bold text-gray-600 mb-1">Nombre del Servicio</label>
                     <input type="text" id="modal-service-name" required class="app-input-no-icon">
@@ -230,158 +214,56 @@
     </div>
 
 
-    <!-- Lógica JavaScript y FIREBASE -->
-    <script type="module">
-        // Importaciones de Firebase (Necesarias para la BBDD)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // --- CONFIGURACIÓN E INICIALIZACIÓN DE FIREBASE ---
-        const apiKey = "";
-        const app_id = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        
-        let services = [];
-        let employees = [];
-        let isAuthenticated = false;
-        
-        // --- CONSTANTES ---
+    <!-- Lógica JavaScript para la administración y agendamiento -->
+    <script>
+        // --- CONFIGURACIÓN DE CONEXIÓN (Render URL) ---
         const BACKEND_URL = 'https://agenda-backend-735v.onrender.com'; 
-        const ADMIN_PASSWORD = '1234';
-        const SERVICE_COLLECTION = `artifacts/${app_id}/public/data/services`;
-        const EMPLOYEE_COLLECTION = `artifacts/${app_id}/public/data/employees`;
+        // ------------------------------------------------------------------
+        
+        // --- Variables de Estado (Modelos de Datos de tu SaaS anterior) ---
+        
+        // Simulación del Modelo Servicio de Django
+        let services = JSON.parse(localStorage.getItem('pinkBlissServices')) || [
+            { id: 'uuid-1', name: 'Corte de Cabello', duration_min: 60, price: 50000 },
+            { id: 'uuid-2', name: 'Manicure Spa', duration_min: 90, price: 75000 },
+            { id: 'uuid-3', name: 'Tinte & Color', duration_min: 120, price: 150000 },
+            { id: 'uuid-4', name: 'Cepillado', duration_min: 45, price: 40000 },
+        ];
+        
+        // Simulación del Modelo Empleado de Django
+        let employees = JSON.parse(localStorage.getItem('pinkBlissEmployees')) || [
+            // service_ids simula la relación ManyToMany (servicios_que_realiza)
+            // schedule_rules simula el modelo HorarioSemanal (simplificado)
+            { id: 'uuid-e1', name: 'Valentina', service_ids: ['uuid-1', 'uuid-2', 'uuid-3'] },
+            { id: 'uuid-e2', name: 'Isabella', service_ids: ['uuid-2', 'uuid-4'] },
+        ];
 
-        // setLogLevel('debug'); // Descomentar para ver logs de Firebase
-
-        // Función para cambiar de pestaña
-        function switchTab(activeTabId) {
-            const tabs = {
-                'tab-agenda': 'content-agenda',
-                'tab-admin-employees': 'content-admin-employees',
-                'tab-admin-services': 'content-admin-services'
-            };
-
-            Object.keys(tabs).forEach(tabId => {
-                const tabButton = document.getElementById(tabId);
-                const contentDiv = document.getElementById(tabs[tabId]);
-                
-                if (tabButton) {
-                    if (tabId === activeTabId) {
-                        tabButton.classList.add('tab-active');
-                        tabButton.classList.remove('tab-inactive');
-                        contentDiv.classList.remove('hidden');
-                    } else {
-                        tabButton.classList.remove('tab-active');
-                        tabButton.classList.add('tab-inactive');
-                        contentDiv.classList.add('hidden');
-                    }
-                }
-            });
-            showMessage('', '');
-        }
-
-        // --- UTILS Y RENDERING ---
+        // --- UTILS ---
         function showMessage(texto, tipo) {
             const div = document.getElementById('mensaje-estado');
             div.textContent = texto;
-            if (tipo === 'exito') {
-                div.className = "p-3 mb-5 rounded-xl text-center font-bold text-sm bg-green-100 text-green-700 border border-green-200";
-            } else if (tipo === 'error') {
-                div.className = "p-3 mb-5 rounded-xl text-center font-bold text-sm bg-red-100 text-red-700 border border-red-200";
-            } else {
-                 div.className = "p-3 mb-5 rounded-xl text-center font-bold text-sm bg-gray-100 text-gray-600";
-            }
+            div.className = `p-3 mb-5 rounded-xl text-center font-bold text-sm ${
+                tipo === 'exito' ? 'bg-green-100 text-green-700 border border-green-200' : 
+                'bg-red-100 text-red-700 border border-red-200'
+            }`;
+            div.classList.remove('hidden');
         }
 
         function formatCurrency(amount) {
             return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(amount);
         }
 
-        // --- LÓGICA DE EMPLEADOS ---
+        // --- LÓGICA DE PERSISTENCIA ---
 
-        function renderServiceCheckboxes(employeeServiceIds = []) {
-            const container = document.getElementById('employee-services-checkboxes');
-            container.innerHTML = '';
-
-            if (services.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-sm italic col-span-2">Añade servicios primero en la pestaña de Administración de Servicios.</p>';
-                return;
-            }
-
-            services.forEach(svc => {
-                const checked = employeeServiceIds.includes(svc.docId) ? 'checked' : '';
-                container.innerHTML += `
-                    <label class="flex items-center space-x-2 text-sm text-gray-700">
-                        <input type="checkbox" name="employee-service" value="${svc.docId}" ${checked} class="rounded text-pink-600 focus:ring-pink-500">
-                        <span>${svc.name} (${svc.duration_min} min)</span>
-                    </label>
-                `;
-            });
+        function saveServicesToLocalStorage() {
+            localStorage.setItem('pinkBlissServices', JSON.stringify(services));
         }
 
-        function renderEmployeeList() {
-            const listContainer = document.getElementById('employee-list');
-            listContainer.innerHTML = '';
-            if (employees.length === 0) {
-                listContainer.innerHTML = '<p class="text-gray-500 italic text-center p-4">Aún no hay estilistas. Añade uno para empezar.</p>';
-                return;
-            }
-
-            employees.forEach(emp => {
-                const employeeServices = services
-                    .filter(svc => emp.service_ids && emp.service_ids.includes(svc.docId))
-                    .map(svc => svc.name)
-                    .join(', ');
-
-                const item = document.createElement('div');
-                item.className = 'bg-white p-4 rounded-xl border border-pink-100 shadow-sm flex justify-between items-center';
-                item.innerHTML = `
-                    <div>
-                        <p class="font-bold text-gray-800">${emp.name}</p>
-                        <p class="text-xs text-gray-500">Horario: ${emp.schedule || 'No definido'}</p>
-                        <p class="text-xs text-gray-500">Servicios: ${employeeServices || 'Ninguno asignado'}</p>
-                    </div>
-                    <div class="space-x-2 flex items-center">
-                        <button data-id="${emp.docId}" class="edit-employee-btn text-blue-500 hover:text-blue-700"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                        <button data-id="${emp.docId}" class="delete-employee-btn text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                `;
-                listContainer.appendChild(item);
-            });
-            lucide.createIcons();
+        function saveEmployeesToLocalStorage() {
+            localStorage.setItem('pinkBlissEmployees', JSON.stringify(employees));
         }
 
-        function renderEmployeeDropdown() {
-            const select = document.getElementById('empleado');
-            select.innerHTML = '';
-            
-            const selectedServiceId = document.getElementById('servicio').value;
-            
-            const availableEmployees = selectedServiceId 
-                ? employees.filter(emp => emp.service_ids && emp.service_ids.includes(selectedServiceId))
-                : employees;
-
-            if (availableEmployees.length === 0) {
-                select.innerHTML = '<option value="">--- Ningún Estilista Disponible ---</option>';
-            } else {
-                select.innerHTML = '<option value="" disabled selected>--- Escoge tu Estilista ---</option>';
-                availableEmployees.forEach(emp => {
-                    const option = document.createElement('option');
-                    option.value = emp.docId;
-                    option.textContent = emp.name;
-                    select.appendChild(option);
-                });
-            }
-        }
-
-        // --- LÓGICA DE SERVICIOS ---
+        // --- LÓGICA DE SERVICIOS (CRUD) ---
 
         function renderServiceList() {
             const listContainer = document.getElementById('service-list');
@@ -400,8 +282,8 @@
                         <p class="text-xs text-gray-500">Duración: ${svc.duration_min} min | Precio: ${formatCurrency(svc.price)}</p>
                     </div>
                     <div class="space-x-2">
-                        <button data-id="${svc.docId}" class="edit-service-btn text-blue-500 hover:text-blue-700"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                        <button data-id="${svc.docId}" class="delete-service-btn text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <button data-id="${svc.id}" class="edit-service-btn text-blue-500 hover:text-blue-700"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <button data-id="${svc.id}" class="delete-service-btn text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
                 `;
                 listContainer.appendChild(item);
@@ -409,6 +291,192 @@
             lucide.createIcons();
         }
 
+        // Lógica del Formulario de Servicios
+        document.getElementById('service-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('service-id').value;
+            const name = document.getElementById('modal-service-name').value;
+            const duration_min = parseInt(document.getElementById('modal-service-duration').value);
+            const price = parseFloat(document.getElementById('modal-service-price').value);
+            
+            if (id) {
+                // Editar existente
+                const index = services.findIndex(svc => svc.id === id);
+                if (index !== -1) {
+                    services[index] = { ...services[index], name, duration_min, price };
+                    showMessage(`Servicio ${name} actualizado.`, 'exito');
+                }
+            } else {
+                // Crear nuevo
+                const newService = {
+                    id: crypto.randomUUID(),
+                    name: name,
+                    duration_min: duration_min,
+                    price: price
+                };
+                services.push(newService);
+                showMessage(`Servicio ${name} añadido.`, 'exito');
+            }
+
+            saveServicesToLocalStorage();
+            renderServiceList();
+            renderServiceDropdown();
+            document.getElementById('service-modal').classList.add('hidden');
+        });
+
+        // Eventos de Edición/Eliminación de Servicios
+        document.getElementById('service-list').addEventListener('click', (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            const id = target.dataset.id;
+            
+            if (target.classList.contains('edit-service-btn')) {
+                const svc = services.find(s => s.id === id);
+                if (svc) {
+                    document.getElementById('service-id').value = svc.id;
+                    document.getElementById('modal-service-name').value = svc.name;
+                    document.getElementById('modal-service-duration').value = svc.duration_min;
+                    document.getElementById('modal-service-price').value = svc.price;
+                    document.getElementById('service-modal-title').textContent = `Editar Servicio: ${svc.name}`;
+                    document.getElementById('service-modal').classList.remove('hidden');
+                }
+            } else if (target.classList.contains('delete-service-btn')) {
+                if (confirm("¿Estás seguro de eliminar este servicio? También será eliminado de los estilistas que lo realizan.")) {
+                    services = services.filter(svc => svc.id !== id);
+                    // Opcional: Limpiar los service_ids de los empleados
+                    employees.forEach(emp => {
+                        emp.service_ids = emp.service_ids.filter(svcId => svcId !== id);
+                    });
+                    saveServicesToLocalStorage();
+                    saveEmployeesToLocalStorage();
+                    renderServiceList();
+                    renderServiceDropdown();
+                    renderEmployeeList();
+                    showMessage('Servicio eliminado.', 'exito');
+                }
+            }
+        });
+
+        // --- LÓGICA DE EMPLEADOS (CRUD & ManyToMany) ---
+
+        function renderServiceCheckboxes(employeeServiceIds = []) {
+            const container = document.getElementById('employee-services-checkboxes');
+            container.innerHTML = '';
+
+            if (services.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-sm italic col-span-2">Añade servicios primero en la pestaña de Administración de Servicios.</p>';
+                return;
+            }
+
+            services.forEach(svc => {
+                const checked = employeeServiceIds.includes(svc.id) ? 'checked' : '';
+                container.innerHTML += `
+                    <label class="flex items-center space-x-2 text-sm text-gray-700">
+                        <input type="checkbox" name="employee-service" value="${svc.id}" ${checked} class="rounded text-pink-600 focus:ring-pink-500">
+                        <span>${svc.name} (${svc.duration_min} min)</span>
+                    </label>
+                `;
+            });
+        }
+
+        function renderEmployeeList() {
+            const listContainer = document.getElementById('employee-list');
+            listContainer.innerHTML = '';
+            if (employees.length === 0) {
+                listContainer.innerHTML = '<p class="text-gray-500 italic text-center p-4">Aún no hay estilistas. Añade uno para empezar.</p>';
+                return;
+            }
+
+            employees.forEach(emp => {
+                // Obtener nombres de servicios que realiza
+                const employeeServices = services
+                    .filter(svc => emp.service_ids.includes(svc.id))
+                    .map(svc => svc.name)
+                    .join(', ');
+
+                const item = document.createElement('div');
+                item.className = 'bg-white p-4 rounded-xl border border-pink-100 shadow-sm flex justify-between items-center';
+                item.innerHTML = `
+                    <div>
+                        <p class="font-bold text-gray-800">${emp.name}</p>
+                        <p class="text-xs text-gray-500">Servicios: ${employeeServices || 'Ninguno asignado'}</p>
+                        <!-- Aquí podríamos añadir un botón para gestionar Horarios Semanales (futura mejora) -->
+                        <button class="mt-2 text-xs font-semibold text-indigo-600 hover:underline">Gestionar Horario Semanal</button>
+                    </div>
+                    <div class="space-x-2 flex items-center">
+                        <button data-id="${emp.id}" class="edit-employee-btn text-blue-500 hover:text-blue-700"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <button data-id="${emp.id}" class="delete-employee-btn text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function renderEmployeeDropdown() {
+            const select = document.getElementById('empleado');
+            select.innerHTML = '';
+            
+            // 1. Obtener el servicio seleccionado
+            const selectedServiceId = document.getElementById('servicio').value;
+            
+            // 2. Filtrar empleados que realizan ese servicio
+            const availableEmployees = selectedServiceId 
+                ? employees.filter(emp => emp.service_ids.includes(selectedServiceId))
+                : employees;
+
+            if (availableEmployees.length === 0) {
+                select.innerHTML = '<option value="">--- Ningún Estilista Disponible ---</option>';
+            } else {
+                select.innerHTML = '<option value="" disabled selected>--- Escoge tu Estilista ---</option>';
+                availableEmployees.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = emp.name;
+                    select.appendChild(option);
+                });
+            }
+        }
+        
+        // Lógica del Formulario de Empleados
+        document.getElementById('employee-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('employee-id').value;
+            const name = document.getElementById('modal-employee-name').value;
+            
+            // Capturar servicios seleccionados (ManyToMany)
+            const selectedServiceIds = Array.from(document.querySelectorAll('#employee-services-checkboxes input[name="employee-service"]:checked'))
+                                         .map(checkbox => checkbox.value);
+
+            if (id) {
+                // Editar existente
+                const index = employees.findIndex(emp => emp.id === id);
+                if (index !== -1) {
+                    employees[index].name = name;
+                    employees[index].service_ids = selectedServiceIds;
+                    showMessage(`Estilista ${name} actualizado.`, 'exito');
+                }
+            } else {
+                // Crear nuevo
+                const newEmployee = {
+                    id: crypto.randomUUID(),
+                    name: name,
+                    service_ids: selectedServiceIds
+                };
+                employees.push(newEmployee);
+                showMessage(`Estilista ${name} añadido.`, 'exito');
+            }
+
+            saveEmployeesToLocalStorage();
+            renderEmployeeList();
+            renderEmployeeDropdown();
+            document.getElementById('employee-modal').classList.add('hidden');
+        });
+
+
+        // --- LÓGICA DE AGENDAMIENTO ---
+        
         function renderServiceDropdown() {
             const select = document.getElementById('servicio');
             select.innerHTML = '';
@@ -418,172 +486,31 @@
                 select.innerHTML = '<option value="" disabled selected>--- Escoge tu Servicio ---</option>';
                 services.forEach(svc => {
                     const option = document.createElement('option');
-                    option.value = svc.docId; 
+                    // Usamos el ID del servicio como valor, para encontrarlo fácilmente
+                    option.value = svc.id; 
                     option.textContent = `${svc.name} (${svc.duration_min} min / ${formatCurrency(svc.price)})`;
                     select.appendChild(option);
                 });
             }
         }
-
+        
         function updateServiceSummary() {
             const serviceId = document.getElementById('servicio').value;
             const summaryElement = document.getElementById('service-summary');
             
             if (serviceId) {
-                const service = services.find(s => s.docId === serviceId);
+                const service = services.find(s => s.id === serviceId);
                 if (service) {
-                    summaryElement.textContent = `Servicio: ${service.name} | Duración: ${service.duration_min} minutos | Precio: ${formatCurrency(service.price)}.`;
+                    summaryElement.textContent = `Servicio seleccionado: ${service.name} | Duración: ${service.duration_min} minutos | Precio: ${formatCurrency(service.price)}.`;
                     summaryElement.classList.remove('hidden');
                 }
             } else {
                 summaryElement.classList.add('hidden');
             }
-            renderEmployeeDropdown(); // Actualiza empleados según el servicio
+            // Recargar el dropdown de empleados ya que dependen del servicio
+            renderEmployeeDropdown();
         }
 
-
-        // --- EVENT HANDLERS (ADMIN) ---
-
-        // ADMIN LOGIN
-        document.getElementById('admin-login-btn').addEventListener('click', () => {
-            document.getElementById('admin-modal').classList.remove('hidden');
-            document.getElementById('admin-password').value = '';
-        });
-        document.getElementById('close-admin-modal-btn').addEventListener('click', () => {
-            document.getElementById('admin-modal').classList.add('hidden');
-        });
-        document.getElementById('login-admin-btn').addEventListener('click', () => {
-            const password = document.getElementById('admin-password').value;
-            if (password === ADMIN_PASSWORD) {
-                isAuthenticated = true;
-                document.getElementById('admin-modal').classList.add('hidden');
-                document.getElementById('tab-admin-employees').classList.remove('hidden');
-                document.getElementById('tab-admin-services').classList.remove('hidden');
-                document.getElementById('admin-login-btn').textContent = 'Admin (Logueado)';
-                switchTab('content-admin-employees');
-                showMessage('Acceso de Administrador concedido. Los cambios se guardan en la BBDD.', 'exito');
-            } else {
-                showMessage('Contraseña incorrecta. Inténtalo de nuevo.', 'error');
-            }
-        });
-
-        // TABS
-        document.getElementById('tab-agenda').addEventListener('click', () => switchTab('content-agenda'));
-        document.getElementById('tab-admin-employees').addEventListener('click', () => {
-            if (isAuthenticated) switchTab('content-admin-employees');
-        });
-        document.getElementById('tab-admin-services').addEventListener('click', () => {
-            if (isAuthenticated) switchTab('content-admin-services');
-        });
-
-        // EMPLOYEE CRUD EVENTS
-        document.getElementById('add-employee-btn').addEventListener('click', () => {
-            document.getElementById('employee-doc-id').value = '';
-            document.getElementById('employee-modal-title').textContent = 'Añadir Nuevo Estilista';
-            document.getElementById('employee-form').reset();
-            renderServiceCheckboxes([]); 
-            document.getElementById('employee-modal').classList.remove('hidden');
-        });
-        document.getElementById('employee-list').addEventListener('click', (e) => {
-            const target = e.target.closest('button');
-            if (!target || target.textContent.includes('Horario')) return;
-            const id = target.dataset.id;
-            
-            if (target.classList.contains('edit-employee-btn')) {
-                const emp = employees.find(e => e.docId === id);
-                if (emp) {
-                    document.getElementById('employee-doc-id').value = id;
-                    document.getElementById('modal-employee-name').value = emp.name;
-                    document.getElementById('modal-employee-schedule').value = emp.schedule || '';
-                    document.getElementById('employee-modal-title').textContent = `Editar a ${emp.name}`;
-                    renderServiceCheckboxes(emp.service_ids || []);
-                    document.getElementById('employee-modal').classList.remove('hidden');
-                }
-            } else if (target.classList.contains('delete-employee-btn')) {
-                if (confirm("¿Estás seguro de eliminar a este estilista?")) {
-                    deleteDoc(doc(db, EMPLOYEE_COLLECTION, id));
-                    showMessage('Estilista eliminado de la BBDD.', 'exito');
-                }
-            }
-        });
-        document.getElementById('employee-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const docId = document.getElementById('employee-doc-id').value;
-            const name = document.getElementById('modal-employee-name').value;
-            const schedule = document.getElementById('modal-employee-schedule').value;
-            const selectedServiceIds = Array.from(document.querySelectorAll('#employee-services-checkboxes input[name="employee-service"]:checked'))
-                                         .map(checkbox => checkbox.value);
-
-            const employeeData = { name, schedule, service_ids: selectedServiceIds };
-            
-            try {
-                if (docId) {
-                    await setDoc(doc(db, EMPLOYEE_COLLECTION, docId), employeeData);
-                    showMessage(`Estilista ${name} actualizado en Firestore.`, 'exito');
-                } else {
-                    await addDoc(collection(db, EMPLOYEE_COLLECTION), employeeData);
-                    showMessage(`Estilista ${name} añadido a Firestore.`, 'exito');
-                }
-                document.getElementById('employee-modal').classList.add('hidden');
-            } catch(e) {
-                showMessage(`Error al guardar empleado: ${e.message}`, 'error');
-            }
-        });
-
-        // SERVICE CRUD EVENTS
-        document.getElementById('add-service-btn').addEventListener('click', () => {
-            document.getElementById('service-doc-id').value = '';
-            document.getElementById('service-modal-title').textContent = 'Añadir Nuevo Servicio';
-            document.getElementById('service-form').reset();
-            document.getElementById('service-modal').classList.remove('hidden');
-        });
-        document.getElementById('service-list').addEventListener('click', (e) => {
-            const target = e.target.closest('button');
-            if (!target) return;
-            const id = target.dataset.id;
-            
-            if (target.classList.contains('edit-service-btn')) {
-                const svc = services.find(s => s.docId === id);
-                if (svc) {
-                    document.getElementById('service-doc-id').value = id;
-                    document.getElementById('modal-service-name').value = svc.name;
-                    document.getElementById('modal-service-duration').value = svc.duration_min;
-                    document.getElementById('modal-service-price').value = svc.price;
-                    document.getElementById('service-modal-title').textContent = `Editar Servicio: ${svc.name}`;
-                    document.getElementById('service-modal').classList.remove('hidden');
-                }
-            } else if (target.classList.contains('delete-service-btn')) {
-                if (confirm("¿Estás seguro de eliminar este servicio?")) {
-                    deleteDoc(doc(db, SERVICE_COLLECTION, id));
-                    showMessage('Servicio eliminado de la BBDD.', 'exito');
-                }
-            }
-        });
-        document.getElementById('service-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const docId = document.getElementById('service-doc-id').value;
-            const name = document.getElementById('modal-service-name').value;
-            const duration_min = parseInt(document.getElementById('modal-service-duration').value);
-            const price = parseFloat(document.getElementById('modal-service-price').value);
-
-            const serviceData = { name, duration_min, price };
-            
-            try {
-                if (docId) {
-                    await setDoc(doc(db, SERVICE_COLLECTION, docId), serviceData);
-                    showMessage(`Servicio ${name} actualizado en Firestore.`, 'exito');
-                } else {
-                    await addDoc(collection(db, SERVICE_COLLECTION), serviceData);
-                    showMessage(`Servicio ${name} añadido a Firestore.`, 'exito');
-                }
-                document.getElementById('service-modal').classList.add('hidden');
-            } catch(e) {
-                showMessage(`Error al guardar servicio: ${e.message}`, 'error');
-            }
-        });
-
-
-        // AGENDAMIENTO Y TELEGRAM
         document.getElementById('form-cita').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-agendar');
@@ -593,9 +520,9 @@
             lucide.createIcons();
             btn.disabled = true;
 
-            const selectedEmployee = employees.find(emp => emp.docId === document.getElementById('empleado').value);
+            const selectedEmployee = employees.find(emp => emp.id === document.getElementById('empleado').value);
             const selectedServiceId = document.getElementById('servicio').value;
-            const selectedService = services.find(svc => svc.docId === selectedServiceId);
+            const selectedService = services.find(svc => svc.id === selectedServiceId);
             
             if (!selectedService || !selectedEmployee) {
                 showMessage("Error: Debes seleccionar un Servicio y un Estilista.", 'error');
@@ -610,9 +537,8 @@
                 clientContact: document.getElementById('contacto').value,
                 serviceName: selectedService.name,
                 serviceDuration: selectedService.duration_min,
-                servicePrice: formatCurrency(selectedService.price),
+                servicePrice: formatCurrency(selectedService.price), // Enviamos el precio para el resumen en Telegram
                 employeeName: selectedEmployee.name,
-                employeeSchedule: selectedEmployee.schedule || 'No Definido',
                 formattedTime: `${document.getElementById('fecha').value} a las ${document.getElementById('hora').value}`
             };
 
@@ -626,14 +552,14 @@
                 if (respuesta.ok) {
                     showMessage("¡Reserva exitosa! Revisa tu Telegram. 💖", 'exito');
                     document.getElementById('form-cita').reset();
-                    updateServiceSummary(); 
+                    updateServiceSummary(); // Limpiar el resumen
                 } else {
                     const error = await respuesta.json();
                     throw new Error(error.message || "Error desconocido");
                 }
             } catch (error) {
-                console.error("Error de Agendamiento:", error);
-                showMessage(`Error: Falló la conexión con el servidor. Verifica Render.`, 'error');
+                console.error(error);
+                showMessage(`Error: Falló la conexión con el servidor. ¿Está Render activo?`, 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
@@ -641,52 +567,95 @@
         });
 
 
-        // --- FIREBASE LISTENERS (REAL-TIME SYNC) ---
-
-        async function initializeAuthAndListeners() {
-            try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                // Servicios Listener
-                onSnapshot(collection(db, SERVICE_COLLECTION), (snapshot) => {
-                    services = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-                    renderServiceDropdown();
-                    renderServiceList();
-                    updateServiceSummary();
-                    showMessage('Datos de servicios sincronizados.', 'exito');
-                }, (error) => {
-                    console.error("Error al escuchar servicios:", error);
-                    showMessage('Error al cargar servicios. Verifica la conexión a Firestore.', 'error');
-                });
-
-                // Empleados Listener
-                onSnapshot(collection(db, EMPLOYEE_COLLECTION), (snapshot) => {
-                    employees = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-                    renderEmployeeDropdown();
-                    renderEmployeeList();
-                    showMessage('Datos de empleados sincronizados.', 'exito');
-                }, (error) => {
-                    console.error("Error al escuchar empleados:", error);
-                    showMessage('Error al cargar empleados. Verifica la conexión a Firestore.', 'error');
-                });
-                
-            } catch (error) {
-                console.error("Error en autenticación Firebase:", error);
-                showMessage("Fallo de autenticación en Firebase. Verifica la configuración.", 'error');
-            }
-        }
-        
-        // --- ARRANQUE ---
+        // --- EVENTOS Y ARRANQUE ---
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+            renderServiceList();
+            renderServiceDropdown();
+            renderEmployeeList();
+            renderEmployeeDropdown();
             document.getElementById('fecha').min = new Date().toISOString().split('T')[0];
+            
+            // Evento para actualizar resumen de servicio y dropdown de empleados
             document.getElementById('servicio').addEventListener('change', updateServiceSummary);
-            initializeAuthAndListeners();
-            switchTab('content-agenda'); // Mostrar la pestaña de agenda por defecto
+
+
+            // 1. Configurar Pestañas
+            const tabs = {
+                'tab-agenda': 'content-agenda',
+                'tab-admin-employees': 'content-admin-employees',
+                'tab-admin-services': 'content-admin-services'
+            };
+
+            function switchTab(activeTabId) {
+                Object.keys(tabs).forEach(tabId => {
+                    const tabButton = document.getElementById(tabId);
+                    const contentDiv = document.getElementById(tabs[tabId]);
+                    
+                    if (tabId === activeTabId) {
+                        tabButton.classList.add('tab-active');
+                        tabButton.classList.remove('tab-inactive');
+                        contentDiv.classList.remove('hidden');
+                    } else {
+                        tabButton.classList.remove('tab-active');
+                        tabButton.classList.add('tab-inactive');
+                        contentDiv.classList.add('hidden');
+                    }
+                });
+                showMessage('', ''); // Limpiar mensajes
+            }
+            
+            document.getElementById('tab-agenda').addEventListener('click', () => switchTab('tab-agenda'));
+            document.getElementById('tab-admin-employees').addEventListener('click', () => switchTab('tab-admin-employees'));
+            document.getElementById('tab-admin-services').addEventListener('click', () => switchTab('tab-admin-services'));
+
+
+            // 2. Eventos del Modal de Empleados
+            document.getElementById('add-employee-btn').addEventListener('click', () => {
+                document.getElementById('employee-id').value = '';
+                document.getElementById('employee-modal-title').textContent = 'Añadir Nuevo Estilista';
+                document.getElementById('employee-form').reset();
+                renderServiceCheckboxes([]); // Vacío para nuevo empleado
+                document.getElementById('employee-modal').classList.remove('hidden');
+            });
+            document.getElementById('close-employee-modal-btn').addEventListener('click', () => {
+                document.getElementById('employee-modal').classList.add('hidden');
+            });
+            document.getElementById('employee-list').addEventListener('click', (e) => {
+                const target = e.target.closest('button');
+                if (!target || target.textContent.includes('Horario')) return; // Ignorar el botón de horario
+                const id = target.dataset.id;
+                
+                if (target.classList.contains('edit-employee-btn')) {
+                    const emp = employees.find(e => e.id === id);
+                    if (emp) {
+                        document.getElementById('employee-id').value = emp.id;
+                        document.getElementById('modal-employee-name').value = emp.name;
+                        document.getElementById('employee-modal-title').textContent = `Editar a ${emp.name}`;
+                        renderServiceCheckboxes(emp.service_ids);
+                        document.getElementById('employee-modal').classList.remove('hidden');
+                    }
+                } else if (target.classList.contains('delete-employee-btn')) {
+                    if (confirm("¿Estás seguro de eliminar a este estilista?")) {
+                        employees = employees.filter(emp => emp.id !== id);
+                        saveEmployeesToLocalStorage();
+                        renderEmployeeList();
+                        renderEmployeeDropdown();
+                        showMessage('Estilista eliminado.', 'exito');
+                    }
+                }
+            });
+            
+            // 3. Eventos del Modal de Servicios
+            document.getElementById('add-service-btn').addEventListener('click', () => {
+                document.getElementById('service-id').value = '';
+                document.getElementById('service-modal-title').textContent = 'Añadir Nuevo Servicio';
+                document.getElementById('service-form').reset();
+                document.getElementById('service-modal').classList.remove('hidden');
+            });
+            document.getElementById('close-service-modal-btn').addEventListener('click', () => {
+                document.getElementById('service-modal').classList.add('hidden');
+            });
         });
     </script>
 </body>
